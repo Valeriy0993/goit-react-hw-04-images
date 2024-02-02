@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './searchbar.module.css';
 
 const Searchbar = ({ onSubmit }) => {
@@ -8,12 +8,20 @@ const Searchbar = ({ onSubmit }) => {
     setSearch(e.target.value);
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const lowercaseSearch = search.toLowerCase();
-    onSubmit({ search: lowercaseSearch });
-    setSearch('');
-  };
+  const handleSubmit = useCallback(
+    async e => {
+      e.preventDefault();
+      const lowercaseSearch = search.toLowerCase();
+
+      try {
+        await onSubmit({ search: lowercaseSearch });
+        setSearch('');
+      } catch (error) {
+        console.error('Error submitting search:', error);
+      }
+    },
+    [onSubmit, search]
+  );
 
   useEffect(() => {
     const handleKeyPress = e => {
@@ -32,26 +40,28 @@ const Searchbar = ({ onSubmit }) => {
   }, [handleSubmit]);
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className={styles.searchForm}>
-        <button type="submit" className={styles.searchFormButton}>
-          <span className={styles.searchFormButtonLabel}>Search</span>
-        </button>
+    <form onSubmit={handleSubmit} className={styles.searchForm} id="searchForm">
+      <button
+        type="submit"
+        className={styles.searchFormButton}
+        htmlFor="searchForm"
+      >
+        <span className={styles.searchFormButtonLabel}>Search</span>
+      </button>
 
-        <input
-          required
-          value={search}
-          onChange={handleChange}
-          className={styles.searchFormInput}
-          type="text"
-          name="search"
-          id="searchInput"
-          autoComplete="off"
-          autoFocus
-          placeholder="Search images and photos"
-        />
-      </form>
-    </>
+      <input
+        required
+        value={search}
+        onChange={handleChange}
+        className={styles.searchFormInput}
+        type="text"
+        name="search"
+        id="searchInput"
+        autoComplete="off"
+        autoFocus
+        placeholder="Search images and photos"
+      />
+    </form>
   );
 };
 
