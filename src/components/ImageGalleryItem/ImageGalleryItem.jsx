@@ -14,21 +14,14 @@ const ImageGalleryItem = ({ showModal, items }) => {
   return (
     <ul className={styles.imageGallery}>
       {items.map(({ id, webformatURL, largeImageURL }) => (
-        <li
+        <ImageGalleryItemElement
           key={id}
-          className={styles.imageGalleryItem}
-          onClick={() => showModal(largeImageURL)}
-        >
-          <img
-            className={styles.imageGalleryItemImage}
-            src={webformatURL}
-            alt="images"
-            onLoad={() => handleImageLoad(id)}
-          />
-          <a href={webformatURL} target="_blank" rel="noopener noreferrer">
-            {' '}
-          </a>
-        </li>
+          id={id}
+          webformatURL={webformatURL}
+          largeImageURL={largeImageURL}
+          showModal={showModal}
+          handleImageLoad={handleImageLoad}
+        />
       ))}
       {isAnyImageLoading && (
         <div className={styles.loaderContainer}>
@@ -36,6 +29,31 @@ const ImageGalleryItem = ({ showModal, items }) => {
         </div>
       )}
     </ul>
+  );
+};
+
+const ImageGalleryItemElement = ({
+  id,
+  webformatURL,
+  largeImageURL,
+  showModal,
+  handleImageLoad,
+}) => {
+  return (
+    <li
+      className={styles.imageGalleryItem}
+      onClick={() => showModal(largeImageURL)}
+    >
+      <img
+        className={styles.imageGalleryItemImage}
+        src={webformatURL}
+        alt="images"
+        onLoad={() => handleImageLoad(id)}
+      />
+      <a href={webformatURL} target="_blank" rel="noopener noreferrer">
+        {' '}
+      </a>
+    </li>
   );
 };
 

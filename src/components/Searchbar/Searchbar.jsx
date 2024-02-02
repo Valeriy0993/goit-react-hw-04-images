@@ -1,52 +1,58 @@
-import { Component } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import styles from './searchbar.module.css';
 
-class Searchbar extends Component {
-  state = {
-    search: '',
+const Searchbar = ({ onSubmit }) => {
+  const [search, setSearch] = useState('');
+
+  const handleChange = e => {
+    setSearch(e.target.value);
   };
 
-  handleChange = ({ target }) => {
-    const { name, value } = target;
-    this.setState({
-      [name]: value,
-    });
-  };
-
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    const lowercaseSearch = this.state.search.toLowerCase();
-    this.props.onSubmit({ search: lowercaseSearch });
-    this.setState({
-      search: '',
-    });
+    const lowercaseSearch = search.toLowerCase();
+    onSubmit({ search: lowercaseSearch });
+    setSearch('');
   };
-  render() {
-    const { handleChange, handleSubmit } = this;
-    const { search } = this.state;
-    return (
-      <>
-        <form onSubmit={handleSubmit} className={styles.searchForm}>
-          <button type="submit" className={styles.searchFormButton}>
-            <span className={styles.searchFormButtonLabel}>Search</span>
-          </button>
 
-          <input
-            required
-            value={search}
-            onChange={handleChange}
-            className={styles.searchFormInput}
-            type="text"
-            name="search"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-          />
-        </form>
-      </>
-    );
-  }
-}
+  useEffect(() => {
+    const handleKeyPress = e => {
+      if (e.key === 'Enter') {
+        handleSubmit(e);
+      }
+    };
+
+    const inputElement = document.getElementById('searchInput');
+
+    inputElement.addEventListener('keypress', handleKeyPress);
+
+    return () => {
+      inputElement.removeEventListener('keypress', handleKeyPress);
+    };
+  }, [handleSubmit]);
+
+  return (
+    <>
+      <form onSubmit={handleSubmit} className={styles.searchForm}>
+        <button type="submit" className={styles.searchFormButton}>
+          <span className={styles.searchFormButtonLabel}>Search</span>
+        </button>
+
+        <input
+          required
+          value={search}
+          onChange={handleChange}
+          className={styles.searchFormInput}
+          type="text"
+          name="search"
+          id="searchInput"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+        />
+      </form>
+    </>
+  );
+};
 
 export default Searchbar;
